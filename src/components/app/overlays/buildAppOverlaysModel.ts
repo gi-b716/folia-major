@@ -3,21 +3,25 @@ import type { MotionValue } from 'framer-motion';
 import type FloatingPlayerControls from '../../FloatingPlayerControls';
 import type SearchWorkspace from '../search/SearchWorkspace';
 import type DevDebugOverlay from '../../DevDebugOverlay';
+import type NowPlayingToast from './NowPlayingToast';
 import { PlayerState } from '../../../types';
 import type { SongResult, UnifiedSong, LyricData } from '../../../types';
 import { resolvePlaybackNeighbors } from '../../../utils/playbackNeighbors';
 import { getPlaybackSongKey } from '../../../utils/appPlaybackGuards';
+import { getSongArtistLabel } from '../../../services/onlineMusic/songMetadata';
 
 // src/components/app/overlays/buildAppOverlaysModel.ts
 
 type SearchOverlayProps = React.ComponentProps<typeof SearchWorkspace>;
 type FloatingControlsProps = React.ComponentProps<typeof FloatingPlayerControls>;
 type DebugOverlayProps = React.ComponentProps<typeof DevDebugOverlay>;
+type NowPlayingToastProps = React.ComponentProps<typeof NowPlayingToast>;
 
 export type AppOverlaysModel = {
     searchOverlay?: SearchOverlayProps | null;
     debugOverlay?: DebugOverlayProps | null;
     floatingControls?: FloatingControlsProps | null;
+    nowPlayingToast?: NowPlayingToastProps | null;
 };
 
 type BuildAppOverlaysModelParams = {
@@ -25,6 +29,8 @@ type BuildAppOverlaysModelParams = {
     isSearchOpen: boolean;
     theme: any;
     isDaylight: boolean;
+    coverUrl: string | null;
+    cachedCoverUrl?: string | null;
     closeSearchView: () => void;
     handleSearchOverlaySubmit: SearchOverlayProps['onSubmitSearch'];
     handleSearchLoadMore: () => Promise<void>;
@@ -73,6 +79,8 @@ export const buildAppOverlaysModel = ({
     isSearchOpen,
     theme,
     isDaylight,
+    coverUrl,
+    cachedCoverUrl,
     closeSearchView,
     handleSearchOverlaySubmit,
     handleSearchLoadMore,
@@ -114,6 +122,17 @@ export const buildAppOverlaysModel = ({
     prevTrackLabel,
     nextTrackLabel,
 }: BuildAppOverlaysModelParams): AppOverlaysModel => ({
+    nowPlayingToast: currentSong
+        ? {
+            song: {
+                title: currentSong.name || '',
+                artist: getSongArtistLabel(currentSong) || null,
+                coverUrl: coverUrl || cachedCoverUrl || null,
+            },
+            trackKey: getPlaybackSongKey(currentSong),
+            isDaylight,
+        }
+        : null,
     searchOverlay: currentView === 'home'
         ? {
             theme,

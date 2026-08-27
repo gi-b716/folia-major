@@ -2839,6 +2839,8 @@ export default function App() {
         isSearchOpen,
         theme,
         isDaylight,
+        coverUrl,
+        cachedCoverUrl,
         closeSearchView,
         handleSearchOverlaySubmit,
         handleSearchLoadMore,
@@ -2921,6 +2923,8 @@ export default function App() {
         theme,
         toggleLoop,
         togglePlay,
+        coverUrl,
+        cachedCoverUrl,
     ]);
     const settingsDialog = useMemo(() => buildSettingsDialogModel({
         state: settingsModalState,
